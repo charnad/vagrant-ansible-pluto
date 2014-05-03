@@ -1,0 +1,60 @@
+---
+- name: Install
+  apt: pkg={{ item }} state=latest
+  sudo: yes
+  with_items:
+    - php5
+    - php5-fpm
+    - php5-cli
+    - php5-curl
+    - php5-gd
+    - php5-dev
+    - php5-mcrypt
+    - php5-curl
+
+- name: Composer | Install
+  sudo: yes
+  shell:
+    curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
+    creates=/usr/local/bin/composer
+        
+- name: Phalcon | Check already installed
+  shell: php -i | grep 'Phalcon Version' | grep -oP '\d\.\d\.\d'
+  register: phalcon_installed_version
+  failed_when: false
+  changed_when: false
+
+- name: Phalcon | Libpcre
+  sudo: yes
+  apt: pkg=libpcre3-dev state=present
+
+- name: Phalcon | Download
+  git: repo=https://github.com/phalcon/cphalcon.git
+       dest=/tmp/cphalcon
+       version=phalcon-v{{phalcon_version}}
+       update=no
+  when: not phalcon_installed_version or phalcon_version is defined and phalcon_installed_version.stdout != phalcon_version
+
+- name: Phalcon | Prepare and Make
+  shell:
+    phpize &&
+    ./configure && make
+    chdir=/tmp/cphalcon/ext
+  ignore_errors: yes
+  when: not phalcon_installed_version or phalcon_version is defined and phalcon_installed_version.stdout != phalcon_version
+
+- name: Phalcon | Install
+  shell:
+    make install &&
+    echo "extension=phalcon.so" > /etc/php5/fpm/conf.d/30-phalcon.ini &&
+    echo "extension=phalcon.so" > /etc/php5/cli/conf.d/30-phalcon.ini
+    chdir=/tmp/cphalcon/ext
+  sudo: yes
+  when: not phalcon_installed_version or phalcon_version is defined and phalcon_installed_version.stdout != phalcon_version
+
+- name: PHPUnit | Install
+  sudo: yes
+  get_url: 
+      url=https://phar.phpunit.de/phpunit.phar
+      dest=/usr/local/bin/phpunit
+      mode=0775

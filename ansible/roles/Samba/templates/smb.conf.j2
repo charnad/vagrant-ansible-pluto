@@ -1,0 +1,38 @@
+[global]
+
+# Network
+    workgroup = WORKGROUP
+    server string = Samba
+
+# Logging
+    log file = /var/log/samba/log
+    max log size = 500
+
+# Security
+    security = user
+    passdb backend = tdbsam
+    guest account = nobody
+
+# Printers
+    load printers = no
+
+# General things
+    follow symlinks = yes
+    wide links = yes
+    unix extensions = no
+
+#### Shares
+
+# Vagrant dev
+[development]
+    comment = Development folder
+    path = /home/vagrant/dev
+    valid users = @vagrant
+    force group = vagrant
+    create mask = 0665
+    directory mask = 0755
+    writable = yes
+    browseable = yes
+    follow symlinks = yes
+    wide links = yes
+    guest ok = no

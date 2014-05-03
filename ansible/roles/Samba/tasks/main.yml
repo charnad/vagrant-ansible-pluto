@@ -1,0 +1,31 @@
+---
+- name: Samba | Install
+  sudo: yes
+  apt: pkg=samba state=present
+  
+- name: Samba | User
+  sudo: yes
+  shell: 
+    (echo "vagrant"; echo "vagrant") | smbpasswd -sa vagrant
+  changed_when: false
+  
+- name: Samba | Folder
+  file: 
+      state=directory
+      path=/home/vagrant/dev
+      owner=vagrant
+      group=vagrant
+      mode=0775
+  
+- name: Samba | Config
+  sudo: yes
+  template: src=smb.conf.j2
+            dest=/etc/samba/smb.conf
+            mode=0644
+  
+- name: Samba | Restart
+  sudo: yes
+  service: name=smbd
+           state=restarted
+           enabled=yes
+  changed_when: false

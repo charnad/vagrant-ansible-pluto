@@ -1,0 +1,34 @@
+---
+- hosts: pluto
+  user: vagrant
+    
+  pre_tasks:
+    - name: Apt-get update
+      sudo: yes
+      apt: update_cache=yes
+    
+  roles:
+    - Git
+    - PHP  # Requires git
+    - Samba
+
+  tasks:
+    - name: NTPD | Install
+      sudo: yes
+      apt: pkg=ntp state=present
+  
+    - name: Redis | Install
+      sudo: yes
+      apt: pkg=redis-server state=present
+
+    - name: RabbitMQ | Install
+      sudo: yes
+      apt: pkg=rabbitmq-server state=present
+      
+    - name: Sendmail | Install
+      sudo: yes
+      apt: pkg=sendmail state=present
+      
+    - name: PostgreSQL | Install
+      sudo: yes
+      apt: pkg=postgresql-9.3 state=present
