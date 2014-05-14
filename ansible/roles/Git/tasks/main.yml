@@ -6,7 +6,7 @@
 - name: Enable colors
   command: git config --global color.ui true
   changed_when: false
-  
+
 - name: Download autocomplete
   get_url: 
       url=https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
@@ -16,7 +16,7 @@
   command:
       touch ~/.bash_profile
       creates=~/.bash_profile
-      
+
 - name: Check autocomplete registered
   command:
       grep -Fxqsc "if [ -f ~/.git-completion.bash ]; then" ~/.bash_profile

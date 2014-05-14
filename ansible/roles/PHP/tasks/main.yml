@@ -17,7 +17,7 @@
   shell:
     curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
     creates=/usr/local/bin/composer
-        
+
 - name: Phalcon | Check already installed
   shell: php -i | grep 'Phalcon Version' | grep -oP '\d\.\d\.\d'
   register: phalcon_installed_version
